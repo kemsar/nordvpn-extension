@@ -1,18 +1,18 @@
 #!/usr/bin/python2
 
-import sys
-import os
-import signal
-import threading
-import time
+# import sys
+# import os
+# import signal
+# import threading
+# import time
 import gi
-import subprocess
+# import subprocess
 from gi.repository import Gtk
-from gi.repository import AppIndicator3 as appindicator
-from gi.repository import Notify as notify
-from xdg import DesktopEntry
-from xdg import IconTheme
-from functools import partial
+# from gi.repository import AppIndicator3 as appindicator
+# from gi.repository import Notify as notify
+# from xdg import DesktopEntry
+# from xdg import IconTheme
+# from functools import partial
 gi.require_version('Gtk', '3.0')
 gi.require_version('AppIndicator3', '0.1')
 gi.require_version('Notify', '0.7')
@@ -90,6 +90,6 @@ class Window(Gtk.Window):
         # self.move(pos.x()-(iconSize[0]/2), pos.y()-iconSize[1]/2);
         self.show()
 
-    def buttonClicked(self, button):
-        os.system(execName + " &");
+    # def buttonClicked(self, button):
+    #     os.system(execName + " &")
         # sys.exit();

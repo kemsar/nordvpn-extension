@@ -1,21 +1,21 @@
 #!/usr/bin/python2
 
-import sys
+# import sys
 import os
-import signal
+# import signal
 import threading
 import time
 import gi
 import subprocess
+from gi.repository import Notify as notify
 gi.require_version('Gtk', '3.0')
 gi.require_version('AppIndicator3', '0.1')
 gi.require_version('Notify', '0.7')
-from gi.repository import Gtk as gtk
-from gi.repository import AppIndicator3 as appindicator
-from gi.repository import Notify as notify
-from xdg import DesktopEntry;
-from xdg import IconTheme;
-from functools import partial;
+# from gi.repository import Gtk as gtk
+# from gi.repository import AppIndicator3 as appindicator
+# from xdg import DesktopEntry;
+# from xdg import IconTheme;
+# from functools import partial;
 
 
 class MonitorThread(object):
@@ -33,7 +33,8 @@ class MonitorThread(object):
         self.indicator = indicator
         thread = threading.Thread(target=self.run, args=())
         thread.daemon = True                            # Daemonize thread
-        notify.Notification.new("NordVPN - Activate", "The NordVPN daemon is running", None).show()
+        msg = "NordVPN - Activate", "The NordVPN daemon is running"
+        notify.Notification.new(msg, None).show()
         thread.start()                                  # Start the execution
 
     def run(self):
@@ -42,11 +43,15 @@ class MonitorThread(object):
             # Do something
             # print('Doing something imporant in the background')
 
-            result = subprocess.check_output(['nordvpn','status'])
+            result = subprocess.check_output(['nordvpn', 'status'])
             print(result)
             # self.indicator.get_menu()
             if "Disconnected" in result:
-                self.indicator.set_icon(os.path.abspath('./resources/icons/nordvpn_icon_red.png'));
+                iconPath = './resources/icons/nordvpn_icon_red.png'
+                path = os.path.abspath(iconPath)
+                self.indicator.set_icon(path)
             else:
-                self.indicator.set_icon(os.path.abspath('./resources/icons/nordvpn_icon_green.png'));
+                iconPath = './resources/icons/nordvpn_icon_green.png'
+                path = os.path.abspath(iconPath)
+                self.indicator.set_icon(path)
             time.sleep(self.interval)
