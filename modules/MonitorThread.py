@@ -1,21 +1,16 @@
 #!/usr/bin/python2
 
-# import sys
 import os
-# import signal
 import threading
 import time
-import gi
 import subprocess
-from gi.repository import Notify as notify
-gi.require_version('Gtk', '3.0')
-gi.require_version('AppIndicator3', '0.1')
-gi.require_version('Notify', '0.7')
-# from gi.repository import Gtk as gtk
-# from gi.repository import AppIndicator3 as appindicator
-# from xdg import DesktopEntry;
-# from xdg import IconTheme;
-# from functools import partial;
+import ConfigParser
+import StringIO
+from modules.Utils import Utils
+# from modules.Config import Config
+
+utils = Utils()
+# config = Config()
 
 
 class MonitorThread(object):
@@ -24,7 +19,7 @@ class MonitorThread(object):
     until the application exits.
     """
 
-    def __init__(self, indicator, notifier, interval=10):
+    def __init__(self, indicator, interval=10):
         """ Constructor
         :type interval: int
         :param interval: Check interval, in seconds
@@ -33,25 +28,26 @@ class MonitorThread(object):
         self.indicator = indicator
         thread = threading.Thread(target=self.run, args=())
         thread.daemon = True                            # Daemonize thread
-        msg = "NordVPN - Activate", "The NordVPN daemon is running"
-        notify.Notification.new(msg, None).show()
+        utils.showNotification('Activated', 'The NordVPN daemon is running')
         thread.start()                                  # Start the execution
 
     def run(self):
         """ Method that runs forever """
         while True:
-            # Do something
-            # print('Doing something imporant in the background')
 
             result = subprocess.check_output(['nordvpn', 'status'])
-            print(result)
+            status = ConfigParser.ConfigParser()
+            str = '[Default]\r\n'
+            ini = str + utils.cleanNotification(result)
+            buf = StringIO.StringIO(ini)
+            status.readfp(buf)
             # self.indicator.get_menu()
             if "Disconnected" in result:
-                iconPath = './resources/icons/nordvpn_icon_red.png'
+                iconPath = './resources/icons/nordvpn_icon_square.png'
                 path = os.path.abspath(iconPath)
                 self.indicator.set_icon(path)
             else:
-                iconPath = './resources/icons/nordvpn_icon_green.png'
+                iconPath = utils.getCountryFlag(status.get('Default','Country'))
                 path = os.path.abspath(iconPath)
                 self.indicator.set_icon(path)
             time.sleep(self.interval)
